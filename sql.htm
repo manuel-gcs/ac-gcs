@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL AC FORM</title>
+</head>
+<body>
+<div class="_form_215"></div><script src="https://ac.opeskey.com/f/embed.php?id=215" charset="utf-8"></script>
+
+
+<script>
+window.onload = () => {
+    // Função para obter os parâmetros da URL em um objeto chave-valor
+    function getUrlParams() {
+        const params = {};
+        const queryString = window.location.search.substring(1); // Remove o "?" da query
+        
+        // Debug: Mostra a string completa da query
+        //alert("Query string capturada da URL: " + queryString);
+        
+        const pairs = queryString.split("&"); // Divide em pares de chave=valor
+        
+        pairs.forEach(pair => {
+            const [key, value] = pair.split("=");
+            if (value) {
+                // Converte chave para minúsculas e armazena os valores como lista, separados por vírgulas
+                params[key.toLowerCase()] = decodeURIComponent(value).toLowerCase().split(",");
+                // Debug: Mostra o parâmetro atual após conversão para minúsculas
+                //alert(`Parâmetro processado (em minúsculas): ${key.toLowerCase()} = ${params[key.toLowerCase()]}`);
+            }
+        });
+        
+        return params;
+    }
+    
+    // Obtem os parâmetros da URL
+    const urlParams = getUrlParams();
+    
+    // Itera sobre cada parâmetro na URL
+    Object.keys(urlParams).forEach(id => {
+        const dropdown = document.querySelector(`[data-name="${id}"]`);
+        
+        if (dropdown && dropdown.tagName === "SELECT" && !dropdown.multiple) {
+            // Para dropdown simples (não múltiplo)
+            //alert(`Dropdown identificado com o atributo data-name="${id}"`);
+            const valueToSelect = urlParams[id][0].trim(); // Para dropdown simples, pega o primeiro valor
+            let found = false;
+            
+            Array.from(dropdown.options).forEach(option => {
+                if (option.value.trim().toLowerCase() === valueToSelect) {
+                    option.selected = true; // Seleciona a opção
+                    found = true;
+                    //alert(`Valor "${valueToSelect}" selecionado no dropdown com data-name="${id}"`);
+                }
+            });
+            
+            if (!found) {
+                //alert(`Valor "${valueToSelect}" não encontrado no dropdown com data-name="${id}"`);
+            }
+        } else if (dropdown && dropdown.tagName === "SELECT" && dropdown.multiple) {
+            // Para seleção múltipla em <select multiple>
+            //alert(`Campo de seleção múltipla identificado com data-name="${id}"`);
+            const valuesToSelect = urlParams[id]; // Valores a serem selecionados
+            let foundAny = false;
+            
+            Array.from(dropdown.options).forEach(option => {
+                if (valuesToSelect.includes(option.value.trim().toLowerCase())) {
+                    option.selected = true; // Seleciona a opção
+                    foundAny = true;
+                    //alert(`Opção "${option.value}" selecionada no campo múltiplo com data-name="${id}"`);
+                }
+            });
+            
+            if (!foundAny) {
+                //alert(`Nenhuma opção correspondente encontrada no campo múltiplo com data-name="${id}"`);
+            }
+        } else {
+            // Para checkboxes
+            const checkboxes = document.querySelectorAll(`[data-name="${id}"]`);
+            if (checkboxes.length > 0) {
+                //alert(`Checkboxes identificados para data-name="${id}"`);
+                const valuesToCheck = urlParams[id]; // Valores a serem marcados
+                let foundAny = false;
+                
+                checkboxes.forEach(checkbox => {
+                    // Verifica se o valor da URL está incluído no value do checkbox
+                    const checkboxValues = checkbox.value.trim().toLowerCase().split(","); // Divide os valores do checkbox
+                    valuesToCheck.forEach(value => {
+                        if (checkboxValues.includes(value.trim())) {
+                            checkbox.checked = true; // Marca o checkbox
+                            foundAny = true;
+                            //alert(`Checkbox com valor "${value}" marcado no campo com data-name="${id}"`);
+                        }
+                    });
+                });
+                
+                if (!foundAny) {
+                    //alert(`Nenhum checkbox correspondente encontrado para data-name="${id}"`);
+                }
+            } else {
+                //alert(`Nenhum campo identificado com data-name="${id}"`);
+            }
+        }
+    });
+}
+</script>
+
+
+
+
+</body>
+</html>
